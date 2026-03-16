@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>LKPD – Explicit & Implicit Information</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F7F3EE;
+    --card: #FFFFFF;
+    --ink: #1A1A2E;
+    --accent: #D4531A;
+    --accent2: #2E7D6B;
+    --soft: #EDE8E2;
+    --border: #D8D1C7;
+    --muted: #7A7470;
+    --yellow: #F5C842;
+    --radius: 16px;
+    --shadow: 0 4px 24px rgba(26,26,46,0.10);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    padding-bottom: 40px;
+  }
+
+  /* ── HEADER ── */
+  header {
+    background: var(--ink);
+    color: #fff;
+    padding: 28px 20px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  header::before {
+    content: '';
+    position: absolute;
+    top: -40px; right: -40px;
+    width: 160px; height: 160px;
+    border-radius: 50%;
+    background: var(--accent);
+    opacity: 0.18;
+  }
+  header::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; left: -30px;
+    width: 100px; height: 100px;
+    border-radius: 50%;
+    background: var(--accent2);
+    opacity: 0.18;
+  }
+  .header-label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--yellow);
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(22px, 6vw, 32px);
+    line-height: 1.2;
+    font-weight: 900;
+  }
+  header p {
+    font-size: 13px;
+    color: rgba(255,255,255,0.65);
+    margin-top: 8px;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap {
+    background: var(--soft);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .progress-bar {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 99px;
+    transition: width 0.5s ease;
+    width: 0%;
+  }
+  .progress-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* ── SECTIONS ── */
+  .section {
+    margin: 20px 16px 0;
+    animation: fadeUp 0.4s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── STUDENT INFO ── */
+  .card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 20px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--ink);
+    margin-bottom: 4px;
+  }
+  .section-sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .form-row { margin-bottom: 14px; }
+  .form-row label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 5px;
+  }
+  .form-row input, .form-row select {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    transition: border 0.2s;
+    -webkit-appearance: none;
+  }
+  .form-row input:focus, .form-row select:focus {
+    outline: none;
+    border-color: var(--accent2);
+    background: #fff;
+  }
+
+  /* ── CONCEPT CARDS ── */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 4px;
+  }
+  .concept-card {
+    border-radius: 14px;
+    padding: 16px 14px;
+    position: relative;
+    overflow: hidden;
+  }
+  .concept-card.explicit { background: #E8F4F1; border: 1.5px solid #B2D8D0; }
+  .concept-card.implicit { background: #FEF3E8; border: 1.5px solid #F5C8A0; }
+  .concept-card .tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .explicit .tag { color: var(--accent2); }
+  .implicit .tag { color: var(--accent); }
+  .concept-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 6px; }
+  .concept-card p { font-size: 12.5px; line-height: 1.5; color: #444; }
+  .concept-card .formula {
+    margin-top: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 10px;
+    border-radius: 99px;
+    display: inline-block;
+  }
+  .explicit .formula { background: var(--accent2); color: #fff; }
+  .implicit .formula { background: var(--accent); color: #fff; }
+
+  /* ── TEXT READING ── */
+  .text-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .text-badge {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+  }
+  .badge-1 { background: var(--accent); color: #fff; }
+  .badge-2 { background: var(--accent2); color: #fff; }
+  .text-header h2 { font-family: 'Playfair Display', serif; font-size: 17px; }
+
+  .reading-box {
+    background: var(--soft);
+    border-left: 4px solid var(--accent);
+    border-radius: 0 12px 12px 0;
+    padding: 16px;
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: var(--ink);
+    margin-bottom: 18px;
+    font-style: italic;
+  }
+  .reading-box.green { border-left-color: var(--accent2); }
+
+  /* ── QUESTIONS ── */
+  .question-block {
+    background: var(--soft);
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 14px;
+  }
+  .question-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+  .q-explicit .question-num { background: var(--accent2); color: #fff; }
+  .q-implicit .question-num { background: var(--accent); color: #fff; }
+  .question-type {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 99px;
+    margin-left: 6px;
+  }
+  .q-explicit .question-type { background: #C8E6DE; color: var(--accent2); }
+  .q-implicit .question-type { background: #FAE0CC; color: var(--accent); }
+  .question-row {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .question-text {
+    font-size: 14px;
+    font-weight: 600;
+    flex: 1;
+    line-height: 1.45;
+  }
+  .mc-options { display: flex; flex-direction: column; gap: 8px; }
+  .mc-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    background: #fff;
+    transition: all 0.2s;
+    font-size: 13.5px;
+    line-height: 1.45;
+  }
+  .mc-option:active { transform: scale(0.98); }
+  .mc-option.selected { border-color: var(--accent2); background: #E8F4F1; }
+  .mc-option.selected.wrong { border-color: #E53E3E; background: #FEE2E2; }
+  .mc-option.correct-reveal { border-color: var(--accent2); background: #E8F4F1; }
+  .mc-option input[type="radio"] { display: none; }
+  .mc-letter {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--soft);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: all 0.2s;
+  }
+  .mc-option.selected .mc-letter { background: var(--accent2); color: #fff; }
+  .mc-option.selected.wrong .mc-letter { background: #E53E3E; color: #fff; }
+  .mc-option.correct-reveal .mc-letter { background: var(--accent2); color: #fff; }
+
+  textarea {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+    resize: vertical;
+    min-height: 80px;
+    transition: border 0.2s;
+    line-height: 1.6;
+  }
+  textarea:focus { outline: none; border-color: var(--accent2); background: #fff; }
+  .char-count { font-size: 11px; color: var(--muted); text-align: right; margin-top: 4px; }
+
+  /* ── FEEDBACK ── */
+  .feedback-msg {
+    font-size: 12.5px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    margin-top: 8px;
+    display: none;
+  }
+  .feedback-msg.show { display: block; }
+  .feedback-msg.ok { background: #E8F4F1; color: var(--accent2); }
+  .feedback-msg.bad { background: #FEE2E2; color: #C53030; }
+
+  /* ── SUBMIT BUTTON ── */
+  .btn-submit {
+    width: 100%;
+    padding: 16px;
+    background: linear-gradient(135deg, var(--ink), #2E2E4E);
+    color: #fff;
+    border: none;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 700;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .btn-submit::before {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.4s;
+  }
+  .btn-submit:hover::before { left: 100%; }
+  .btn-submit:active { transform: scale(0.98); }
+  .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+  /* ── SUCCESS ── */
+  #success-screen {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 999;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 32px;
+    text-align: center;
+    animation: fadeUp 0.5s ease;
+  }
+  #success-screen.show { display: flex; }
+  .success-icon {
+    width: 80px; height: 80px;
+    background: linear-gradient(135deg, var(--accent2), #1A5C4E);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 36px;
+    margin-bottom: 20px;
+    box-shadow: 0 8px 32px rgba(46,125,107,0.35);
+    animation: pop 0.5s 0.2s cubic-bezier(0.34,1.56,0.64,1) both;
+  }
+  @keyframes pop {
+    from { transform: scale(0); }
+    to   { transform: scale(1); }
+  }
+  #success-screen h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    margin-bottom: 10px;
+  }
+  #success-screen p { font-size: 15px; color: var(--muted); max-width: 300px; }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed;
+    bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--ink);
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 99px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 9999;
+    transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    white-space: nowrap;
+    max-width: 90vw;
+    text-align: center;
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── SCORE SUMMARY ── */
+  .score-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: 99px;
+    font-size: 13px;
+    font-weight: 700;
+    background: var(--soft);
+    border: 1px solid var(--border);
+    margin-top: 6px;
+  }
+
+  /* ── DIVIDER ── */
+  .divider {
+    height: 1px;
+    background: var(--border);
+    margin: 6px 0 16px;
+  }
+
+  /* ── REFLECTION ── */
+  .reflection-wrap { margin-top: 4px; }
+  .reflection-wrap label {
+    font-size: 13.5px;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 8px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ────────── HEADER ────────── -->
+<header>
+  <div class="header-label">LKPD · Grade 10 English</div>
+  <h1>Explicit &amp; Implicit<br>Information</h1>
+  <p>Report Text Reading Activity</p>
+</header>
+
+<!-- ────────── PROGRESS ────────── -->
+<div class="progress-wrap">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">0 / 10</div>
+</div>
+
+<!-- ────────── STUDENT INFO ────────── -->
+<div class="section">
+  <div class="card">
+    <div class="section-title">Student Information</div>
+    <div class="section-sub">Select your class first, then choose your name.</div>
+    <div class="form-row">
+      <label>Class</label>
+      <select id="studentClass" onchange="populateNames()">
+        <option value="">— Select Class —</option>
+        <option value="XA">XA</option>
+        <option value="XB">XB</option>
+      </select>
+    </div>
+    <div class="form-row" id="nameRow" style="display:none;">
+      <label>Full Name</label>
+      <select id="studentName" onchange="updateProgress()">
+        <option value="">— Select Your Name —</option>
+      </select>
+    </div>
+    <div class="form-row">
+      <label>Student ID / NIS</label>
+      <input type="text" id="studentNIS" placeholder="e.g. 2024001" oninput="updateProgress()">
+    </div>
+  </div>
+</div>
+
+<!-- ────────── CONCEPT REVIEW ────────── -->
+<div class="section">
+  <div class="card">
+    <div class="section-title">Quick Review</div>
+    <div class="section-sub">Remember these two key concepts.</div>
+    <div class="concept-grid">
+      <div class="concept-card explicit">
+        <div class="tag">Explicit</div>
+        <h3>Stated Directly</h3>
+        <p>The answer is written clearly in the text. No need to guess.</p>
+        <div class="formula">The text SAYS it</div>
+      </div>
+      <div class="concept-card implicit">
+        <div class="tag">Implicit</div>
+        <h3>Read Between Lines</h3>
+        <p>The answer is not written. You must infer from clues.</p>
+        <div class="formula">The text MEANS it</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TEXT 1 – SEA LIONS
+════════════════════════════════════════ -->
+<div class="section">
+  <div class="card">
+    <div class="text-header">
+      <div class="text-badge badge-1">1</div>
+      <h2>Sea Lions</h2>
+    </div>
+    <div class="reading-box">
+      Sea lions, belonging to the <strong>Otariidae</strong> family, are marine mammals known for their agility both in water and on land. With streamlined bodies, external ear flaps, and powerful flippers, sea lions inhabit coastal areas globally. Highly social, they communicate through vocalizations, forming colonies for breeding and protection. Opportunistic feeders, sea lions play a vital role in marine ecosystems. While some populations thrive, conservation efforts are essential to protect sea lions from threats like habitat loss and pollution.
+    </div>
+
+    <!-- Q1 -->
+    <div class="question-block q-explicit" data-qid="q1" data-correct="B" data-type="mc">
+      <div class="question-row">
+        <span class="question-num">1</span>
+        <div>
+          <span class="question-text">What family do sea lions belong to?</span>
+          <span class="question-type">Explicit</span>
+        </div>
+      </div>
+      <div class="mc-options">
+        <label class="mc-option" data-val="A"><input type="radio" name="q1" value="A"><span class="mc-letter">A</span> Pinnipedia</label>
+        <label class="mc-option" data-val="B"><input type="radio" name="q1" value="B"><span class="mc-letter">B</span> Otariidae</label>
+        <label class="mc-option" data-val="C"><input type="radio" name="q1" value="C"><span class="mc-letter">C</span> Phocidae</label>
+        <label class="mc-option" data-val="D"><input type="radio" name="q1" value="D"><span class="mc-letter">D</span> Cetacea</label>
+      </div>
+      <div class="feedback-msg" id="fb-q1"></div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="question-block q-explicit" data-qid="q2" data-correct="C" data-type="mc">
+      <div class="question-row">
+        <span class="question-num">2</span>
+        <div>
+          <span class="question-text">Where do sea lions primarily live?</span>
+          <span class="question-type">Explicit</span>
+        </div>
+      </div>
+      <div class="mc-options">
+        <label class="mc-option" data-val="A"><input type="radio" name="q2" value="A"><span class="mc-letter">A</span> Deep ocean trenches</label>
+        <label class="mc-option" data-val="B"><input type="radio" name="q2" value="B"><span class="mc-letter">B</span> Freshwater rivers</label>
+        <label class="mc-option" data-val="C"><input type="radio" name="q2" value="C"><span class="mc-letter">C</span> Coastal areas globally</label>
+        <label class="mc-option" data-val="D"><input type="radio" name="q2" value="D"><span class="mc-letter">D</span> Arctic tundra</label>
+      </div>
+      <div class="feedback-msg" id="fb-q2"></div>
+    </div>
+
+    <!-- Q3 IMPLICIT MC -->
+    <div class="question-block q-implicit" data-qid="q3" data-correct="A" data-type="mc">
+      <div class="question-row">
+        <span class="question-num">3</span>
+        <div>
+          <span class="question-text">What can be implied about sea lions forming colonies?</span>
+          <span class="question-type">Implicit</span>
+        </div>
+      </div>
+      <div class="mc-options">
+        <label class="mc-option" data-val="A"><input type="radio" name="q3" value="A"><span class="mc-letter">A</span> They benefit from living together for safety and reproduction.</label>
+        <label class="mc-option" data-val="B"><input type="radio" name="q3" value="B"><span class="mc-letter">B</span> They prefer solitary life in deep waters.</label>
+        <label class="mc-option" data-val="C"><input type="radio" name="q3" value="C"><span class="mc-letter">C</span> They only gather when food is scarce.</label>
+        <label class="mc-option" data-val="D"><input type="radio" name="q3" value="D"><span class="mc-letter">D</span> They compete aggressively with each other.</label>
+      </div>
+      <div class="feedback-msg" id="fb-q3"></div>
+    </div>
+
+    <!-- Q4 IMPLICIT ESSAY -->
+    <div class="question-block q-implicit" data-qid="q4" data-type="essay">
+      <div class="question-row">
+        <span class="question-num">4</span>
+        <div>
+          <span class="question-text">Based on the text, what does the phrase <em>"conservation efforts are essential"</em> imply about the current situation of sea lions?</span>
+          <span class="question-type">Implicit</span>
+        </div>
+      </div>
+      <div class="reflection-wrap">
+        <textarea id="q4" rows="4" placeholder="Write your answer here... (min. 20 words)" oninput="countChars('q4','cc4')"></textarea>
+        <div class="char-count" id="cc4">0 words</div>
+      </div>
+    </div>
+
+    <!-- Q5 EXPLICIT ESSAY -->
+    <div class="question-block q-explicit" data-qid="q5" data-type="essay">
+      <div class="question-row">
+        <span class="question-num">5</span>
+        <div>
+          <span class="question-text">List <strong>two explicit threats</strong> mentioned in the text that sea lions face.</span>
+          <span class="question-type">Explicit</span>
+        </div>
+      </div>
+      <div class="reflection-wrap">
+        <textarea id="q5" rows="3" placeholder="1. ...\n2. ..." oninput="countChars('q5','cc5')"></textarea>
+        <div class="char-count" id="cc5">0 words</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════
+     TEXT 2 – MOUNTAINS
+════════════════════════════════════════ -->
+<div class="section">
+  <div class="card">
+    <div class="text-header">
+      <div class="text-badge badge-2">2</div>
+      <h2>Mountains</h2>
+    </div>
+    <div class="reading-box green">
+      Mountains, majestic geological formations, are elevated landmasses often reaching considerable heights. Formed through tectonic processes, mountains exhibit diverse landscapes, including rugged peaks, deep valleys, and steep slopes. Notable examples include the <strong>Himalayas</strong>, the tallest mountain range globally, and the <strong>Andes</strong>, the longest. Mountains play a crucial role in Earth's climate, influencing weather patterns and serving as watersheds for rivers. Furthermore, these elevated terrains contribute significantly to biodiversity, hosting unique flora and fauna adapted to the challenging environments. Despite their scenic beauty, mountains face threats such as deforestation and climate change, necessitating conservation efforts.
+    </div>
+
+    <!-- Q6 -->
+    <div class="question-block q-explicit" data-qid="q6" data-correct="D" data-type="mc">
+      <div class="question-row">
+        <span class="question-num">6</span>
+        <div>
+          <span class="question-text">Which mountain range is described as the <em>tallest globally</em>?</span>
+          <span class="question-type">Explicit</span>
+        </div>
+      </div>
+      <div class="mc-options">
+        <label class="mc-option" data-val="A"><input type="radio" name="q6" value="A"><span class="mc-letter">A</span> The Andes</label>
+        <label class="mc-option" data-val="B"><input type="radio" name="q6" value="B"><span class="mc-letter">B</span> The Rockies</label>
+        <label class="mc-option" data-val="C"><input type="radio" name="q6" value="C"><span class="mc-letter">C</span> The Alps</label>
+        <label class="mc-option" data-val="D"><input type="radio" name="q6" value="D"><span class="mc-letter">D</span> The Himalayas</label>
+      </div>
+      <div class="feedback-msg" id="fb-q6"></div>
+    </div>
+
+    <!-- Q7 -->
+    <div class="question-block q-explicit" data-qid="q7" data-correct="B" data-type="mc">
+      <div class="question-row">
+        <span class="question-num">7</span>
+        <div>
+          <span class="question-text">How were mountains formed, according to the text?</span>
+          <span class="question-type">Explicit</span>
+        </div>
+      </div>
+      <div class="mc-options">
+        <label class="mc-option" data-val="A"><input type="radio" name="q7" value="A"><span class="mc-letter">A</span> Volcanic eruptions only</label>
+        <label class="mc-option" data-val="B"><input type="radio" name="q7" value="B"><span class="mc-letter">B</span> Tectonic processes</label>
+        <label class="mc-option" data-val="C"><input type="radio" name="q7" value="C"><span class="mc-letter">C</span> Ocean wave erosion</label>
+        <label class="mc-option" data-val="D"><input type="radio" name="q7" value="D"><span class="mc-letter">D</span> Wind deposits</label>
+      </div>
+      <div class="feedback-msg" id="fb-q7"></div>
+    </div>
+
+    <!-- Q8 IMPLICIT MC -->
+    <div class="question-block q-implicit" data-qid="q8" data-correct="C" data-type="mc">
+      <div class="question-row">
+        <span class="question-num">8</span>
+        <div>
+          <span class="question-text">What can be implied from the fact that mountains serve as <em>"watersheds for rivers"</em>?</span>
+          <span class="question-type">Implicit</span>
+        </div>
+      </div>
+      <div class="mc-options">
+        <label class="mc-option" data-val="A"><input type="radio" name="q8" value="A"><span class="mc-letter">A</span> Mountains are only important for tourism.</label>
+        <label class="mc-option" data-val="B"><input type="radio" name="q8" value="B"><span class="mc-letter">B</span> Rivers can exist without mountains.</label>
+        <label class="mc-option" data-val="C"><input type="radio" name="q8" value="C"><span class="mc-letter">C</span> Destroying mountains could reduce freshwater supply for rivers.</label>
+        <label class="mc-option" data-val="D"><input type="radio" name="q8" value="D"><span class="mc-letter">D</span> All rivers originate from the Himalayas.</label>
+      </div>
+      <div class="feedback-msg" id="fb-q8"></div>
+    </div>
+
+    <!-- Q9 IMPLICIT ESSAY -->
+    <div class="question-block q-implicit" data-qid="q9" data-type="essay">
+      <div class="question-row">
+        <span class="question-num">9</span>
+        <div>
+          <span class="question-text">The text states mountains host flora and fauna <em>"adapted to the challenging environments."</em> What does this imply about mountain life forms?</span>
+          <span class="question-type">Implicit</span>
+        </div>
+      </div>
+      <div class="reflection-wrap">
+        <textarea id="q9" rows="4" placeholder="Write your answer here... (min. 20 words)" oninput="countChars('q9','cc9')"></textarea>
+        <div class="char-count" id="cc9">0 words</div>
+      </div>
+    </div>
+
+    <!-- Q10 ESSAY REFLECTION -->
+    <div class="question-block q-implicit" data-qid="q10" data-type="essay">
+      <div class="question-row">
+        <span class="question-num">10</span>
+        <div>
+          <span class="question-text">Both texts mention <em>conservation efforts</em>. What can you conclude about the relationship between human activity and these natural environments?</span>
+          <span class="question-type">Implicit</span>
+        </div>
+      </div>
+      <div class="reflection-wrap">
+        <textarea id="q10" rows="5" placeholder="Write your reflection here... (min. 30 words)" oninput="countChars('q10','cc10')"></textarea>
+        <div class="char-count" id="cc10">0 words</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ────────── SUBMIT ────────── -->
+<div class="section">
+  <div class="card">
+    <div class="section-title">Submit Your Work</div>
+    <div class="section-sub">Make sure all questions are answered before submitting.</div>
+    <div class="divider"></div>
+    <div id="scorePreview" style="margin-bottom:14px; display:none;">
+      <span style="font-size:13px; color:var(--muted); font-weight:600;">MC Score Preview:</span>
+      <span class="score-pill" id="scorePill">⭐ — / 6</span>
+    </div>
+    <button class="btn-submit" id="submitBtn" onclick="submitLKPD()">
+      📤 &nbsp; Submit LKPD
+    </button>
+    <p style="font-size:12px; color:var(--muted); text-align:center; margin-top:10px;">Your answers will be saved to the teacher's spreadsheet.</p>
+  </div>
+</div>
+
+<!-- ────────── SUCCESS SCREEN ────────── -->
+<div id="success-screen">
+  <div class="success-icon">✓</div>
+  <h2>Submitted!</h2>
+  <p>Your LKPD has been saved successfully. Well done!</p>
+  <div style="margin-top:20px; padding:16px 20px; background:var(--soft); border-radius:12px; max-width:280px; width:100%;">
+    <div style="font-size:12px; color:var(--muted); font-weight:600; margin-bottom:4px;">MC SCORE</div>
+    <div id="finalScore" style="font-family:'Playfair Display',serif; font-size:36px; font-weight:900;"></div>
+    <div style="font-size:13px; color:var(--muted); margin-top:4px;">Multiple choice correct answers</div>
+  </div>
+</div>
+
+<!-- ────────── TOAST ────────── -->
+<div id="toast"></div>
+
+<!-- ════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════════ -->
+<script>
+// ── CONFIG ─────────────────────────────
+// Replace with your Google Apps Script Web App URL
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwqLauB_iK6KSbcqWD8QDHhDQqTm-ZK7JykcHPCcovw5tD2ne9kIq-Rx_LAdkkNXgRf/exec";
+
+// ── STUDENT DATA ────────────────────────
+const studentData = {
+  XA: [
+    "Adelce Anastasya Mairapea",
+    "Agrylia Wyanet Juventya Awie",
+    "Angela Octavia Maryant Gultom",
+    "Bergita Watereyau",
+    "Christine Hu",
+    "City Paradila Magai",
+    "Dominika Viarenatta Renaning Sukma",
+    "Eliora Judith Naomi",
+    "Ermelinda Bintang Prasanti",
+    "Gabriella Patricia Kasihiuw",
+    "Grasella E.K Uropmabin",
+    "Keysha Kinantya Sava",
+    "Kresensia Bernarda Takati",
+    "Lea Wetapo",
+    "Liana Jovita Juwanto",
+    "Margaretha Amelia",
+    "Megawati Mayor",
+    "Merielven Thentia Tissandana",
+    "Meyta Clarensia",
+    "Nadia",
+    "Natasha Wijaya",
+    "Natasya Listyoprabowo",
+    "Noberta Diwitau",
+    "Tamara Marice Aytem",
+    "Thisna Veronika",
+    "Vanes Andara",
+    "Veronica Yozinnia Absalon",
+    "Yessiska Lani Febriani",
+    "Alifah Deliana Mecibaru"
+  ],
+  XB: [
+    "Amartya Bhumikensaras Setiono",
+    "Aprillia Stephani Alom",
+    "Aurelia Stephania",
+    "Bernadeta Claudia Oktavia Quartzia",
+    "Chelsea Ruditha",
+    "Claudya Priscilla Natasha",
+    "Domina Nambagani",
+    "Ester Selvi Yosef",
+    "Elisabet Jamang",
+    "Gloria Clara Anastasya",
+    "Hara Nadhira",
+    "Herlina Noventhy Ciwe",
+    "Jessica Christabella Nelwan",
+    "Jezania Lakeizha Aurelia",
+    "Lilian Mimi Arisoi",
+    "Marcellina Anindita Rahning Pramesti",
+    "Maria Jessica Lovy Maurent",
+    "Mersil Jusmina Mansoben",
+    "Noperince Janampa",
+    "Novelin Yulingka Krey",
+    "Priska Katagame",
+    "Rachel Cory Victoria Letsoin",
+    "Sara Fillaria Siwalette",
+    "Sharon Evangelista Dodu",
+    "Vichieta Dyara",
+    "Vincentia Belva Ayuadytia Sinandang",
+    "Wihelmina Elmabertine Pambudi",
+    "Wilma Arina Degrue Wairon",
+    "Yessiska Lina Febriana",
+    "Yulia Esti Kanonggopme",
+    "Yustina Amanda Vanya Yape"
+  ]
+};
+
+function populateNames() {
+  const cls = document.getElementById('studentClass').value;
+  const nameSelect = document.getElementById('studentName');
+  const nameRow = document.getElementById('nameRow');
+  nameSelect.innerHTML = '<option value="">— Select Your Name —</option>';
+  if (cls && studentData[cls]) {
+    studentData[cls].forEach(name => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      nameSelect.appendChild(opt);
+    });
+    nameRow.style.display = 'block';
+  } else {
+    nameRow.style.display = 'none';
+  }
+  updateProgress();
+}
+
+// ── MC Answer tracking ──────────────────
+const mcAnswers = {};
+const mcCorrect = { q1:'B', q2:'C', q3:'A', q6:'D', q7:'B', q8:'C' };
+let totalAnswered = 0;
+
+function updateProgress() {
+  const mc = Object.keys(mcAnswers).length;
+  const essay = ['q4','q5','q9','q10'].filter(id => {
+    const el = document.getElementById(id);
+    return el && el.value.trim().split(/\s+/).filter(Boolean).length >= 5;
+  }).length;
+  const info = ['studentName','studentClass','studentNIS'].filter(id => {
+    const el = document.getElementById(id);
+    return el && el.value.trim().length > 0;
+  }).length;
+  totalAnswered = mc + essay + info;
+  const total = 6 + 4 + 3; // mc + essay + info
+  const pct = Math.min(100, Math.round(totalAnswered / total * 100));
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressLabel').textContent = pct + '%';
+
+  // score preview
+  const mcScore = Object.entries(mcAnswers).filter(([k,v]) => mcCorrect[k] === v).length;
+  document.getElementById('scorePreview').style.display = mc > 0 ? 'block' : 'none';
+  document.getElementById('scorePill').textContent = `⭐ ${mcScore} / 6 MC correct`;
+}
+
+// ── MC click handling ───────────────────
+document.querySelectorAll('.question-block[data-type="mc"]').forEach(block => {
+  const qid = block.dataset.qid;
+  const correct = block.dataset.correct;
+  block.querySelectorAll('.mc-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      if (block.dataset.locked === 'true') return;
+      const val = opt.dataset.val;
+      // deselect all
+      block.querySelectorAll('.mc-option').forEach(o => {
+        o.classList.remove('selected','wrong');
+      });
+      opt.classList.add('selected');
+      mcAnswers[qid] = val;
+
+      // instant feedback
+      const fb = document.getElementById('fb-' + qid);
+      if (val === correct) {
+        fb.className = 'feedback-msg show ok';
+        fb.textContent = '✅ Correct! Well done.';
+        block.dataset.locked = 'true';
+        block.querySelectorAll('.mc-option').forEach(o => {
+          o.style.pointerEvents = 'none';
+        });
+      } else {
+        opt.classList.add('wrong');
+        fb.className = 'feedback-msg show bad';
+        fb.textContent = '❌ Not quite — try again!';
+        // reveal correct
+        setTimeout(() => {
+          block.querySelectorAll('.mc-option').forEach(o => {
+            if (o.dataset.val === correct) o.classList.add('correct-reveal');
+          });
+          block.dataset.locked = 'true';
+          block.querySelectorAll('.mc-option').forEach(o => {
+            o.style.pointerEvents = 'none';
+          });
+          fb.textContent = `❌ The correct answer is ${correct}.`;
+        }, 1200);
+      }
+      updateProgress();
+    });
+  });
+});
+
+// ── Word count ──────────────────────────
+function countChars(id, ccId) {
+  const words = document.getElementById(id).value.trim().split(/\s+/).filter(Boolean).length;
+  document.getElementById(ccId).textContent = words + ' word' + (words !== 1 ? 's' : '');
+  updateProgress();
+}
+
+// ── Validate ────────────────────────────
+function validate() {
+  const cls = document.getElementById('studentClass').value;
+  const name = document.getElementById('studentName').value;
+  const nis = document.getElementById('studentNIS').value.trim();
+  if (!cls)  { toast('Please select your class.'); return false; }
+  if (!name) { toast('Please select your name.'); return false; }
+  if (!nis)  { toast('Please enter your Student ID.'); return false; }
+
+  const essays = ['q4','q5','q9','q10'];
+  for (const id of essays) {
+    const words = document.getElementById(id).value.trim().split(/\s+/).filter(Boolean).length;
+    if (words < 5) {
+      toast(`Question ${id.replace('q','')} needs more text.`);
+      document.getElementById(id).scrollIntoView({ behavior:'smooth', block:'center' });
+      return false;
+    }
+  }
+  return true;
+}
+
+// ── Toast ───────────────────────────────
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ── Submit ──────────────────────────────
+async function submitLKPD() {
+  if (!validate()) return;
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = '⏳  Submitting…';
+
+  const mcScore = Object.entries(mcAnswers).filter(([k,v]) => mcCorrect[k] === v).length;
+
+  const payload = {
+    timestamp: new Date().toLocaleString('id-ID'),
+    name: document.getElementById('studentName').value.trim(),
+    class: document.getElementById('studentClass').value,
+    nis: document.getElementById('studentNIS').value.trim(),
+    // MC answers
+    q1: mcAnswers['q1'] || '',
+    q2: mcAnswers['q2'] || '',
+    q3: mcAnswers['q3'] || '',
+    q6: mcAnswers['q6'] || '',
+    q7: mcAnswers['q7'] || '',
+    q8: mcAnswers['q8'] || '',
+    mcScore: mcScore + '/6',
+    // Essays
+    q4: document.getElementById('q4').value.trim(),
+    q5: document.getElementById('q5').value.trim(),
+    q9: document.getElementById('q9').value.trim(),
+    q10: document.getElementById('q10').value.trim(),
+  };
+
+  try {
+    await fetch(GAS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    document.getElementById('finalScore').textContent = mcScore + ' / 6';
+    document.getElementById('success-screen').classList.add('show');
+  } catch (err) {
+    toast('Submission failed. Check your internet connection.');
+    btn.disabled = false;
+    btn.textContent = '📤  Submit LKPD';
+  }
+}
+</script>
+</body>
+</html>
